@@ -24,7 +24,7 @@ import org.junit.Test;
  */
 public class ZookeeperClusterTest {
 	private static final String HOST = "localhost";
-	private static final ZkClient zkClient = new ZkClient("localhost:2181");
+	private static final ZkClient zkClient = new ZkClient(ZookeeperConfig.CONNECT_STRING);
 	private static final String PATH = "/server";
 	private static List<String> hosts = new ArrayList<String>(3);
 	
