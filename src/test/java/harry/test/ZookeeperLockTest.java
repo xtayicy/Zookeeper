@@ -25,25 +25,25 @@ import harry.test.lock.ZNodeName;
  */
 public class ZookeeperLockTest {
 	private static final Logger logger = LoggerFactory.getLogger(ZookeeperLockTest.class);
-	
+
 	@Test
-	public void test() throws IOException, RemoteLockUnreachableException, InterruptedException, ExecutionException{
+	public void test() throws IOException, RemoteLockUnreachableException, InterruptedException, ExecutionException {
 		ZooKeeper zooKeeper = new ZooKeeper(ZookeeperConfig.CONNECT_STRING, 5000, null);
-		RemoteLockTemplate remoteLockTemplate = new RemoteLockTemplate(zooKeeper,"/lock",10);
+		RemoteLockTemplate remoteLockTemplate = new RemoteLockTemplate(zooKeeper, "/lock", 10);
 		RemoteLockFuture<Object> future = remoteLockTemplate.lockAndExecute(new Callable<Object>() {
 
 			@Override
 			public Object call() throws Exception {
-				
+
 				return new Date();
 			}
 		});
-		
+
 		logger.info(future.get().toString());
 	}
-	
+
 	@Test
-	public void test_(){
-		
+	public void test_() {
+
 	}
 }
