@@ -4,7 +4,7 @@
 	<groupId>harry.zookeeper</groupId>
 	<artifactId>zookeeperDemo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
