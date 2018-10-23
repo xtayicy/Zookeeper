@@ -37,9 +37,4 @@ public class ZookeeperLockTest {
 
 		logger.info(future.get().toString());
 	}
-
-	@Test
-	public void test_() {
-
-	}
 }
