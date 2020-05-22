@@ -123,10 +123,8 @@ public class RemoteLock extends ProtocolSupport {
 				zookeeperOperation.execute();
 			} catch (InterruptedException e) {
 				logger.warn("Caught: " + e, e);
-				// set that we have been interrupted.
 				Thread.currentThread().interrupt();
 			} catch (KeeperException.NoNodeException e) {
-				// do nothing
 			} catch (KeeperException e) {
 				logger.warn("Caught: " + e, e);
 				throw (RuntimeException) new RuntimeException(e.getMessage()).initCause(e);
