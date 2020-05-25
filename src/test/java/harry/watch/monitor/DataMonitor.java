@@ -1,9 +1,6 @@
 package harry.watch.monitor;
 
 import org.apache.zookeeper.AsyncCallback.StatCallback;
-
-import java.util.Arrays;
-
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.WatchedEvent;
