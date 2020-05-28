@@ -7,6 +7,8 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import harry.watch.Executor;
 import harry.watch.listener.DataMonitorListener;
@@ -17,6 +19,7 @@ import harry.watch.listener.DataMonitorListener;
  *
  */
 public class DataMonitor implements Watcher, StatCallback {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataMonitor.class);
 	private ZooKeeper zooKeeper;
 	private String znode;
 	private DataMonitorListener listener;
@@ -34,9 +37,9 @@ public class DataMonitor implements Watcher, StatCallback {
 	@Override
 	public void process(WatchedEvent event) {
 		String path = event.getPath();
-		System.out.println("The content of the path is " + path);
-		System.out.println("The type of the event is " + event.getType());
-		System.out.println("The state of the event is " + event.getState());
+		LOGGER.info("The content of the path is " + path);
+		LOGGER.info("The type of the event is " + event.getType());
+		LOGGER.info("The state of the event is " + event.getState());
 		if (event.getType() == Event.EventType.None) {
 			/**
 			 * We are are being told that the state of the connection has
@@ -74,13 +77,13 @@ public class DataMonitor implements Watcher, StatCallback {
 		boolean exists;
 		switch (rc) {
 		case Code.Ok:
-			System.out.println("The code is Ok.");
+			LOGGER.info("The code is Ok.");
 			exists = true;
 
 			break;
 
 		case Code.NoNode:
-			System.out.println("The code is NoNode.");
+			LOGGER.info("The code is NoNode.");
 			exists = false;
 
 			break;
@@ -101,7 +104,7 @@ public class DataMonitor implements Watcher, StatCallback {
 		if(exists){
 			try {
 				b = zooKeeper.getData(znode, false, null);
-				System.out.println("The content of the b is " + new String(b));
+				LOGGER.info("The content of the b is " + new String(b));
 			} catch (KeeperException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e) {

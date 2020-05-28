@@ -20,7 +20,7 @@ import harry.test.lock.RemoteLockUnreachableException;
  *
  */
 public class ZookeeperLockTest {
-	private static final Logger logger = LoggerFactory.getLogger(ZookeeperLockTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperLockTest.class);
 
 	@Test
 	public void test() throws IOException, RemoteLockUnreachableException, InterruptedException, ExecutionException {
@@ -35,6 +35,6 @@ public class ZookeeperLockTest {
 			}
 		});
 
-		logger.info(future.get().toString());
+		LOGGER.info(future.get().toString());
 	}
 }

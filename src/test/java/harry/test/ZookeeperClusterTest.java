@@ -9,6 +9,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -16,6 +17,8 @@ import java.util.Random;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -24,9 +27,10 @@ import org.junit.Test;
  */
 public class ZookeeperClusterTest {
 	private static final String HOST = "localhost";
-	private static final ZkClient zkClient = new ZkClient(ZookeeperConfig.CONNECT_STRING);
+	private static ZkClient zkClient = new ZkClient(ZookeeperConfig.CONNECT_STRING);
 	private static final String PATH = "/server";
 	private static List<String> hosts = new ArrayList<String>(3);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperClusterTest.class);
 	
 	private void monitor(String host,int port){
 		if(!zkClient.exists(PATH)){
@@ -39,13 +43,10 @@ public class ZookeeperClusterTest {
 		}
 	}
 	
-	@Test
-	public void server_7777() throws IOException{
+	private void process(int port,String msg) throws IOException{
 		ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-		final int port = 7777;
 		serverSocketChannel.bind(new InetSocketAddress(HOST, port));
 		serverSocketChannel.configureBlocking(false);
-		
 		Selector sel = Selector.open();
 		serverSocketChannel.register(sel , SelectionKey.OP_ACCEPT);
 		monitor(HOST,port);
@@ -64,9 +65,8 @@ public class ZookeeperClusterTest {
 				}else if(selectionKey.isReadable()){
 					SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
 					ByteBuffer dst = ByteBuffer.allocate(1024);
-					int len;
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					while((len = socketChannel.read(dst)) != -1){
+					while((socketChannel.read(dst)) != -1){
 						dst.flip();
 						while(dst.hasRemaining()){
 							baos.write(dst.get());
@@ -78,7 +78,6 @@ public class ZookeeperClusterTest {
 					socketChannel.register(sel, SelectionKey.OP_WRITE, baos);
 				}else if(selectionKey.isWritable()){
 					SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-					String msg = "hellp,client!I'm server_7777.";
 					ByteBuffer src = ByteBuffer.allocate(msg.getBytes().length);
 					src.put(msg.getBytes());
 					src.flip();
@@ -93,106 +92,18 @@ public class ZookeeperClusterTest {
 	}
 	
 	@Test
+	public void server_7777() throws IOException{
+		process(7777, "hello,client!I'm server_7777.");
+	}
+	
+	@Test
 	public void server_8888() throws IOException{
-		ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-		final int port = 8888;
-		serverSocketChannel.bind(new InetSocketAddress(HOST, port));
-		serverSocketChannel.configureBlocking(false);
-		
-		Selector sel = Selector.open();
-		serverSocketChannel.register(sel , SelectionKey.OP_ACCEPT);
-		monitor(HOST, port);
-		while(true){
-			int num = sel.select();
-			if(num == 0)
-				continue;
-			Iterator<SelectionKey> iterator = sel.selectedKeys().iterator();
-			while(iterator.hasNext()){
-				SelectionKey selectionKey = iterator.next();
-				if(selectionKey.isAcceptable()){
-					serverSocketChannel = (ServerSocketChannel) selectionKey.channel();
-					SocketChannel socketChannel = serverSocketChannel.accept();
-					socketChannel.configureBlocking(false);
-					socketChannel.register(sel, SelectionKey.OP_READ);
-				}else if(selectionKey.isReadable()){
-					SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-					ByteBuffer dst = ByteBuffer.allocate(1024);
-					int len;
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					while((len = socketChannel.read(dst)) != -1){
-						dst.flip();
-						while(dst.hasRemaining()){
-							baos.write(dst.get());
-						}
-						
-						dst.clear();
-					}
-					
-					socketChannel.register(sel, SelectionKey.OP_WRITE,baos);
-				}else if(selectionKey.isWritable()){
-					SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-					String msg = "hello,client!I'm server_8888";
-					ByteBuffer src = ByteBuffer.allocate(msg.getBytes().length);
-					src.put(msg.getBytes());
-					src.flip();
-					socketChannel.write(src );
-					socketChannel.close();
-				}
-				
-				iterator.remove();
-			}
-		}
+		process(8888, "hello,client!I'm server_8888.");
 	}
 
 	@Test
 	public void server_9999() throws IOException {
-		ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-		int port = 9999;
-		serverSocketChannel.bind(new InetSocketAddress(HOST, port));
-		serverSocketChannel.configureBlocking(false);
-
-		Selector selector = Selector.open();
-		serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-		monitor(HOST, port);
-		while (true) {
-			int num = selector.select();
-			if (num == 0)
-				continue;
-			Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-			while (iterator.hasNext()) {
-				SelectionKey selectionKey = iterator.next();
-				if (selectionKey.isAcceptable()) {
-					serverSocketChannel = (ServerSocketChannel) selectionKey.channel();
-					SocketChannel socketChannel = serverSocketChannel.accept();
-					socketChannel.configureBlocking(false);
-					socketChannel.register(selector, SelectionKey.OP_READ);
-				} else if (selectionKey.isReadable()) {
-					SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-					int len;
-					ByteBuffer dst = ByteBuffer.allocate(1024);
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					while ((len = socketChannel.read(dst)) != -1) {
-						dst.flip();
-						while (dst.hasRemaining()) {
-							baos.write(dst.get());
-						}
-						dst.clear();
-					}
-
-					socketChannel.register(selector, SelectionKey.OP_WRITE, baos);
-				} else if (selectionKey.isWritable()) {
-					SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-					String msg = "hello,client!I'm server_9999.";
-					ByteBuffer src = ByteBuffer.allocate(msg.getBytes().length);
-					src.put(msg.getBytes());
-					src.flip();
-					socketChannel.write(src);
-					socketChannel.close();
-				}
-
-				iterator.remove();
-			}
-		}
+		process(9999, "hello,client!I'm server_9999.");
 	}
 
 	@Test
@@ -205,7 +116,7 @@ public class ZookeeperClusterTest {
 		});
 		
 		hosts = zkClient.getChildren(PATH);
-		System.out.println(hosts);
+		LOGGER.info(Arrays.toString(hosts.toArray()));
 		if(hosts.size() != 0){
 			String node = hosts.get(new Random().nextInt(hosts.size()));
 			String host = node.split(":")[0];
@@ -223,10 +134,9 @@ public class ZookeeperClusterTest {
 		socketChannel.write(buffer);
 		socketChannel.shutdownOutput();
 
-		int len;
 		ByteBuffer dst = ByteBuffer.allocate(1024);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		while ((len = socketChannel.read(dst)) != -1) {
+		while ((socketChannel.read(dst)) != -1) {
 			dst.flip();
 			while (dst.hasRemaining()) {
 				baos.write(dst.get());
@@ -235,7 +145,7 @@ public class ZookeeperClusterTest {
 			dst.clear();
 		}
 
-		System.out.println(baos);
+		LOGGER.info(baos.toString());
 		socketChannel.close();
 	}
 }

@@ -1,15 +1,14 @@
 package harry.barrier;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import harry.common.SyncPrimitive;
 
@@ -19,6 +18,7 @@ import harry.common.SyncPrimitive;
  *
  */
 public class Barrier extends SyncPrimitive {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Barrier.class);
 	private int size;
 	private Long timeInMillis;
 
@@ -33,48 +33,16 @@ public class Barrier extends SyncPrimitive {
 					zooKeeper.create(root, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 				}
 			} catch (KeeperException e) {
-				System.out.println("Keeper Exception when instantiating barrier: " + e.toString());
+				LOGGER.warn("Keeper Exception when instantiating barrier: " + e.toString());
 			} catch (InterruptedException e) {
-				System.out.println("Interrupted Exception.");
+				LOGGER.warn("Interrupted Exception.");
 			}
 			
 			timeInMillis =  Calendar.getInstance().getTimeInMillis();
 		}
 	}
 
-	public static void main(String[] args) {
-		String address = "localhost";
-		String name = "/barrier";
-		int size = 2;
-		Barrier barrier = new Barrier(address, name, size);
-		try {
-			boolean flag = barrier.enter();
-			if(!flag) System.out.println("Error when entering the barrier.");
-		} catch (KeeperException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		Random random = new Random();
-		int r = random.nextInt(100);
-		for (int i = 0; i < r; i++) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		try {
-			barrier.leave();
-		} catch (InterruptedException | KeeperException e) {
-		}
-		
-		System.out.println("Left barrier.");
-	}
-
-	private boolean leave() throws InterruptedException, KeeperException {
+	public boolean leave() throws InterruptedException, KeeperException {
 		zooKeeper.delete(root + "/" + timeInMillis, 0);
 		while(true){
 			synchronized (mutex) {
@@ -88,7 +56,7 @@ public class Barrier extends SyncPrimitive {
 		}
 	}
 
-	private boolean enter() throws KeeperException, InterruptedException {
+	public boolean enter() throws KeeperException, InterruptedException {
 		zooKeeper.create(root + "/" + timeInMillis, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
 		while(true){
 			synchronized (mutex){

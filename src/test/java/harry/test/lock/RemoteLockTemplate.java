@@ -2,7 +2,6 @@ package harry.test.lock;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -23,9 +22,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class RemoteLockTemplate {
-	private static final Logger logger = LoggerFactory.getLogger(RemoteLockTemplate.class);
-	private static final AtomicLong counter = new AtomicLong(0);
-	private static final TreeMap<Long, RemoteLockFuture<?>> treeMap = new TreeMap<Long, RemoteLockFuture<?>>();
+	private static final Logger LOGGER = LoggerFactory.getLogger(RemoteLockTemplate.class);
+	private static final AtomicLong COUNTER = new AtomicLong(0);
+	private static final TreeMap<Long, RemoteLockFuture<?>> TREEMAP = new TreeMap<Long, RemoteLockFuture<?>>();
 	private Lock lock = new ReentrantLock();
 	private RemoteLock remoteLock;
 	private Integer batchSize = 5;
@@ -37,15 +36,15 @@ public class RemoteLockTemplate {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void acquireLock() {
-				logger.info("acquire lock...");
+				LOGGER.info("acquire lock...");
 
 				try {
 					List<RemoteLockFuture<?>> futures = new ArrayList<RemoteLockFuture<?>>();
 					lock.lock();
 					try {
-						int min = Math.min(treeMap.size(), batchSize);
+						int min = Math.min(TREEMAP.size(), batchSize);
 						for (int i = 0; i < min; i++) {
-							Entry<Long, RemoteLockFuture<?>> pollFirstEntry = treeMap.pollFirstEntry();
+							Entry<Long, RemoteLockFuture<?>> pollFirstEntry = TREEMAP.pollFirstEntry();
 							if (pollFirstEntry != null) {
 								RemoteLockFuture<?> value = pollFirstEntry.getValue();
 								if (!value.isCancelled()) {
@@ -73,31 +72,31 @@ public class RemoteLockTemplate {
 
 			@Override
 			public void releaseLock() {
-				logger.info("release lock.....");
+				LOGGER.info("release lock.....");
 			}
 		});
 	}
 
 	public <V> RemoteLockFuture<V> lockAndExecute(Callable<V> callable) throws RemoteLockUnreachableException {
-		logger.info("lockAndExecute...");
+		LOGGER.info("lockAndExecute...");
 		RemoteLockFuture<V> remoteLockFuture = null;
 		lock.lock();
-		long sn = counter.incrementAndGet();
+		long sn = COUNTER.incrementAndGet();
 		try {
-			remoteLockFuture = new RemoteLockFuture<>(sn, treeMap, callable);
-			treeMap.put(sn, remoteLockFuture);
-			logger.info("treeMap :" + treeMap);
+			remoteLockFuture = new RemoteLockFuture<>(sn, TREEMAP, callable);
+			TREEMAP.put(sn, remoteLockFuture);
+			LOGGER.info("treeMap :" + TREEMAP);
 		} finally {
 			lock.unlock();
 		}
 
 		try {
-			logger.info("lock...");
+			LOGGER.info("lock...");
 			remoteLock.lock();
 		} catch (Exception e) {
 			lock.lock();
 			try {
-				treeMap.remove(sn);
+				TREEMAP.remove(sn);
 			} finally {
 				lock.unlock();
 			}

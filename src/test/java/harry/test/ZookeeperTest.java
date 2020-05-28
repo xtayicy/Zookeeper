@@ -1,12 +1,13 @@
 package harry.test;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.CreateMode;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -16,6 +17,7 @@ import org.junit.Test;
 public class ZookeeperTest {
 	private ZkClient zkClient = new ZkClient("localhost:2181");
 	private static final String PATH = "/zoo";
+	private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperTest.class);
 	
 	@Test
 	public void testCreate(){
@@ -63,10 +65,10 @@ public class ZookeeperTest {
 	}
 	
 	private void read(String path){
-		System.out.println(zkClient.readData(path).toString());
+		LOGGER.info(zkClient.readData(path).toString());
 	}
 	
 	private void isExist(String path){
-		System.out.println(zkClient.exists(path));
+		LOGGER.info(Boolean.toString(zkClient.exists(path)));
 	}
 }

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class RemoteLockFuture<V> implements Future<V> {
-	private static final Logger logger = LoggerFactory.getLogger(RemoteLockFuture.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RemoteLockFuture.class);
 	private final CountDownLatch countDownLatch;
 	private V result;
 	private final Callable<V> callable;
@@ -27,7 +27,6 @@ public class RemoteLockFuture<V> implements Future<V> {
 	
 	public RemoteLockFuture(Long sn,TreeMap<Long,RemoteLockFuture<?>> treeMap,Callable<V> callable) {
 		this.localSn = new AtomicLong(sn);
-		WeakReference<TreeMap<Long, RemoteLockFuture<?>>> weakReference = new WeakReference<>(treeMap);
 		countDownLatch = new CountDownLatch(1);
 		this.callable = callable;
 	}
@@ -49,21 +48,21 @@ public class RemoteLockFuture<V> implements Future<V> {
 
 	@Override
 	public boolean isCancelled() {
-		logger.info("isCancelled...");
+		LOGGER.info("isCancelled...");
 		
 		return localSn.get() == 0;
 	}
 
 	@Override
 	public boolean isDone() {
-		logger.info("isDone....");
+		LOGGER.info("isDone....");
 		
 		return countDownLatch.getCount() == 0;
 	}
 
 	@Override
 	public V get() throws InterruptedException, ExecutionException {
-		logger.info("get....");
+		LOGGER.info("get....");
 		countDownLatch.await();
 		
 		return result;
