@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class RemoteLock extends ProtocolSupport {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RemoteLock.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RemoteLock.class);
 	private LockListener lockListener;
 	private final String dir;
 	private String id;
@@ -41,24 +41,24 @@ public class RemoteLock extends ProtocolSupport {
 			for (String name : zookeeper.getChildren(dir, false)) {
 				if (name.startsWith(prefix)) {
 					id = name;
-					LOGGER.info("Found id created last time: " + id);
+					LOG.info("Found id created last time: " + id);
 					break;
 				}
 			}
 
 			if (id == null) {
 				id = zookeeper.create(dir + "/" + prefix, data, getAcl(), CreateMode.EPHEMERAL_SEQUENTIAL);
-				LOGGER.info("Created id: " + id);
+				LOG.info("Created id: " + id);
 			}
 		}
 
 		@Override
 		public boolean execute() throws KeeperException, InterruptedException {
-			LOGGER.info("execute....");
+			LOG.info("execute....");
 			do {
 				if (id == null) {
 					long sessionId = zooKeeper.getSessionId();
-					LOGGER.info("sessionid = " + sessionId);
+					LOG.info("sessionid = " + sessionId);
 					String prefix = "x-" + sessionId + "-";
 					findPrefixInChildren(prefix, zooKeeper, dir);
 					zNodeName = new ZNodeName(id);
@@ -67,7 +67,7 @@ public class RemoteLock extends ProtocolSupport {
 				if (id != null) {
 					List<String> names = zooKeeper.getChildren(dir, false);
 					if (names.isEmpty()) {
-						LOGGER.warn(
+						LOG.warn(
 								"No children in: " + dir + " when we've just " + "created one! Lets recreate it...");
 						id = null;
 					} else {
@@ -77,7 +77,7 @@ public class RemoteLock extends ProtocolSupport {
 						}
 
 						ownerId = sortedNames.first().getName();
-						LOGGER.info("ownerId = " + ownerId);
+						LOG.info("ownerId = " + ownerId);
 						SortedSet<ZNodeName> headSet = sortedNames.headSet(zNodeName);
 						if (headSet.isEmpty()) {
 							if (isOwner()) {
@@ -110,7 +110,7 @@ public class RemoteLock extends ProtocolSupport {
 
 	public synchronized void unlock() {
 		if (!isClosed() && id != null) {
-			LOGGER.info("unlock....");
+			LOG.info("unlock....");
 			try {
 				ZookeeperOperation zookeeperOperation = new ZookeeperOperation() {
 					@Override
@@ -122,11 +122,11 @@ public class RemoteLock extends ProtocolSupport {
 
 				zookeeperOperation.execute();
 			} catch (InterruptedException e) {
-				LOGGER.warn("Caught: " + e, e);
+				LOG.warn("Caught: " + e, e);
 				Thread.currentThread().interrupt();
 			} catch (KeeperException.NoNodeException e) {
 			} catch (KeeperException e) {
-				LOGGER.warn("Caught: " + e, e);
+				LOG.warn("Caught: " + e, e);
 				throw (RuntimeException) new RuntimeException(e.getMessage()).initCause(e);
 			} finally {
 				if (lockListener != null) {

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class RemoteLockTemplate {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RemoteLockTemplate.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RemoteLockTemplate.class);
 	private static final AtomicLong COUNTER = new AtomicLong(0);
 	private static final TreeMap<Long, RemoteLockFuture<?>> TREEMAP = new TreeMap<Long, RemoteLockFuture<?>>();
 	private Lock lock = new ReentrantLock();
@@ -36,7 +36,7 @@ public class RemoteLockTemplate {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void acquireLock() {
-				LOGGER.info("acquire lock...");
+				LOG.info("acquire lock...");
 
 				try {
 					List<RemoteLockFuture<?>> futures = new ArrayList<RemoteLockFuture<?>>();
@@ -72,26 +72,26 @@ public class RemoteLockTemplate {
 
 			@Override
 			public void releaseLock() {
-				LOGGER.info("release lock.....");
+				LOG.info("release lock.....");
 			}
 		});
 	}
 
 	public <V> RemoteLockFuture<V> lockAndExecute(Callable<V> callable) throws RemoteLockUnreachableException {
-		LOGGER.info("lockAndExecute...");
+		LOG.info("lockAndExecute...");
 		RemoteLockFuture<V> remoteLockFuture = null;
 		lock.lock();
 		long sn = COUNTER.incrementAndGet();
 		try {
 			remoteLockFuture = new RemoteLockFuture<>(sn, TREEMAP, callable);
 			TREEMAP.put(sn, remoteLockFuture);
-			LOGGER.info("treeMap :" + TREEMAP);
+			LOG.info("treeMap :" + TREEMAP);
 		} finally {
 			lock.unlock();
 		}
 
 		try {
-			LOGGER.info("lock...");
+			LOG.info("lock...");
 			remoteLock.lock();
 		} catch (Exception e) {
 			lock.lock();

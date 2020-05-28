@@ -18,7 +18,7 @@ import harry.common.SyncPrimitive;
  *
  */
 public class Queue extends SyncPrimitive{
-	private Logger LOGGER = LoggerFactory.getLogger(Queue.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Queue.class);
 	
 	Queue(String address,String name){
 		super(address);
@@ -30,9 +30,9 @@ public class Queue extends SyncPrimitive{
 					zooKeeper.create(root, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 				}
 			} catch (KeeperException e) {
-				LOGGER.info("Keeper Exception when instantiating queue: " + e.toString());
+				LOG.info("Keeper Exception when instantiating queue: " + e.toString());
 			} catch (InterruptedException e) {
-				LOGGER.info("Interrupted Exception.");
+				LOG.info("Interrupted Exception.");
 			}
 		}
 	}
@@ -44,7 +44,7 @@ public class Queue extends SyncPrimitive{
 			synchronized (mutex) {
 				List<String> list = zooKeeper.getChildren(root, true);
 				if(list.size() == 0){
-					LOGGER.info("Going to wait.");
+					LOG.info("Going to wait.");
 					mutex.wait();
 				}else{
 					String minNode = list.get(0);
@@ -57,7 +57,7 @@ public class Queue extends SyncPrimitive{
 						}
 					}
 					
-					LOGGER.info("Temporary value: " + root + "/" + minNode);
+					LOG.info("Temporary value: " + root + "/" + minNode);
 					byte[] b = zooKeeper.getData(root + "/" + minNode, false, null);
 					zooKeeper.delete(root + "/" + minNode, 0);
 					ByteBuffer buffer = ByteBuffer.wrap(b);
