@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ZNodeName implements Comparable<ZNodeName>{
-	private static final Logger LOGGER = LoggerFactory.getLogger(ZNodeName.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ZNodeName.class);
 	private final String name;
 	private String prefix;
 	private int sequence = -1;
@@ -29,9 +29,9 @@ public class ZNodeName implements Comparable<ZNodeName>{
                 // If an exception occurred we misdetected a sequence suffix,
                 // so return -1.
             } catch (NumberFormatException e) {
-            	LOGGER.info("Number format exception for " + idx, e);
+            	LOG.info("Number format exception for " + idx, e);
             } catch (ArrayIndexOutOfBoundsException e) {
-            	LOGGER.info("Array out of bounds for " + idx, e);
+            	LOG.info("Array out of bounds for " + idx, e);
             }
         }
 	}

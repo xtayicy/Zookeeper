@@ -19,7 +19,7 @@ import harry.watch.listener.DataMonitorListener;
  *
  */
 public class DataMonitor implements Watcher, StatCallback {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DataMonitor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DataMonitor.class);
 	private ZooKeeper zooKeeper;
 	private String znode;
 	private DataMonitorListener listener;
@@ -37,9 +37,9 @@ public class DataMonitor implements Watcher, StatCallback {
 	@Override
 	public void process(WatchedEvent event) {
 		String path = event.getPath();
-		LOGGER.info("The content of the path is " + path);
-		LOGGER.info("The type of the event is " + event.getType());
-		LOGGER.info("The state of the event is " + event.getState());
+		LOG.info("The content of the path is " + path);
+		LOG.info("The type of the event is " + event.getType());
+		LOG.info("The state of the event is " + event.getState());
 		if (event.getType() == Event.EventType.None) {
 			/**
 			 * We are are being told that the state of the connection has
@@ -77,13 +77,13 @@ public class DataMonitor implements Watcher, StatCallback {
 		boolean exists;
 		switch (rc) {
 		case Code.Ok:
-			LOGGER.info("The code is Ok.");
+			LOG.info("The code is Ok.");
 			exists = true;
 
 			break;
 
 		case Code.NoNode:
-			LOGGER.info("The code is NoNode.");
+			LOG.info("The code is NoNode.");
 			exists = false;
 
 			break;
@@ -104,7 +104,7 @@ public class DataMonitor implements Watcher, StatCallback {
 		if(exists){
 			try {
 				b = zooKeeper.getData(znode, false, null);
-				LOGGER.info("The content of the b is " + new String(b));
+				LOG.info("The content of the b is " + new String(b));
 			} catch (KeeperException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e) {

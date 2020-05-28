@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ProtocolSupport {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolSupport.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ProtocolSupport.class);
 	private List<ACL> acl = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 	protected final ZooKeeper zooKeeper;
 	private AtomicBoolean closed = new AtomicBoolean(false);
@@ -43,7 +43,7 @@ public class ProtocolSupport {
 			@Override
 			public boolean execute() throws KeeperException, InterruptedException {
 				Stat exists = zooKeeper.exists(path, null);
-				LOGGER.info("exists :" + exists);
+				LOG.info("exists :" + exists);
 				if(exists != null){
 					return true;
 				}
@@ -60,13 +60,13 @@ public class ProtocolSupport {
 			try {
 				return zookeeperOperation.execute();
 			}  catch (KeeperException.SessionExpiredException e) {
-                LOGGER.warn("Session expired for: " + zooKeeper + " so reconnecting due to: " + e, e);
+                LOG.warn("Session expired for: " + zooKeeper + " so reconnecting due to: " + e, e);
                 throw e;
             } catch (KeeperException.ConnectionLossException e) {
                 if (exception == null) {
                     exception = e;
                 }
-                LOGGER.debug("Attempt " + i + " failed with connection loss so " +
+                LOG.debug("Attempt " + i + " failed with connection loss so " +
                 		"attempting to reconnect: " + e, e);
                 retryDelay(i);
             }
@@ -80,7 +80,7 @@ public class ProtocolSupport {
 			try {
 				Thread.sleep(attemptCount * retryDelay);
 			} catch (InterruptedException e) {
-				LOGGER.debug("Failed to sleep: " + e, e);
+				LOG.debug("Failed to sleep: " + e, e);
 			}
 		}
 	}

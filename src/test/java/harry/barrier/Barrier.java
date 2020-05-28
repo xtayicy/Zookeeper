@@ -18,7 +18,7 @@ import harry.common.SyncPrimitive;
  *
  */
 public class Barrier extends SyncPrimitive {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Barrier.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Barrier.class);
 	private int size;
 	private Long timeInMillis;
 
@@ -33,9 +33,9 @@ public class Barrier extends SyncPrimitive {
 					zooKeeper.create(root, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 				}
 			} catch (KeeperException e) {
-				LOGGER.warn("Keeper Exception when instantiating barrier: " + e.toString());
+				LOG.warn("Keeper Exception when instantiating barrier: " + e.toString());
 			} catch (InterruptedException e) {
-				LOGGER.warn("Interrupted Exception.");
+				LOG.warn("Interrupted Exception.");
 			}
 			
 			timeInMillis =  Calendar.getInstance().getTimeInMillis();

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class QueueTest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(QueueTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(QueueTest.class);
 	
 	@Test
 	public void test(){
@@ -24,7 +24,7 @@ public class QueueTest {
 	}
 	
 	private void producer(Queue queue){
-		LOGGER.info("Producer: ");
+		LOG.info("Producer: ");
 		for(int i = 0;i < 10;i++){
 			try {
 				queue.produce(i);
@@ -37,7 +37,7 @@ public class QueueTest {
 	}
 	
 	private void consumer(Queue queue){
-		LOGGER.info("Consumer: ");
+		LOG.info("Consumer: ");
 		for (int i = 0; i < 10; i++) {
 			try {
 				int result = queue.consume();

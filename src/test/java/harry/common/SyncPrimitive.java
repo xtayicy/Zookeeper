@@ -17,17 +17,17 @@ public class SyncPrimitive implements Watcher{
 	protected static ZooKeeper zooKeeper;
 	protected static Integer mutex;
 	protected String root;
-	private static final Logger LOGGER = LoggerFactory.getLogger(SyncPrimitive.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SyncPrimitive.class);
 	
 	public SyncPrimitive(String address) {
 		if(zooKeeper == null){
 			try {
-				LOGGER.info("Starting ZooKeeper: ");
+				LOG.info("Starting ZooKeeper: ");
 				zooKeeper = new ZooKeeper(address, 3000, this);
 				mutex = new Integer(-1);
 				System.out.println("Fininshed starting ZooKeeper: " + zooKeeper);
 			} catch (IOException e) {
-				LOGGER.warn(e.toString());
+				LOG.warn(e.toString());
 				zooKeeper = null;
 			}
 		}

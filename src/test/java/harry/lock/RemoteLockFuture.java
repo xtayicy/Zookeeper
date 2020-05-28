@@ -1,6 +1,5 @@
 package harry.lock;
 
-import java.lang.ref.WeakReference;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -19,7 +18,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class RemoteLockFuture<V> implements Future<V> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RemoteLockFuture.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RemoteLockFuture.class);
 	private final CountDownLatch countDownLatch;
 	private V result;
 	private final Callable<V> callable;
@@ -48,21 +47,21 @@ public class RemoteLockFuture<V> implements Future<V> {
 
 	@Override
 	public boolean isCancelled() {
-		LOGGER.info("isCancelled...");
+		LOG.info("isCancelled...");
 		
 		return localSn.get() == 0;
 	}
 
 	@Override
 	public boolean isDone() {
-		LOGGER.info("isDone....");
+		LOG.info("isDone....");
 		
 		return countDownLatch.getCount() == 0;
 	}
 
 	@Override
 	public V get() throws InterruptedException, ExecutionException {
-		LOGGER.info("get....");
+		LOG.info("get....");
 		countDownLatch.await();
 		
 		return result;

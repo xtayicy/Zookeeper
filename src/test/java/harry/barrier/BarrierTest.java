@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class BarrierTest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(BarrierTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BarrierTest.class);
 	
 	@Test
 	public void test(){
@@ -23,7 +23,7 @@ public class BarrierTest {
 		Barrier barrier = new Barrier(address, name, size);
 		try {
 			boolean flag = barrier.enter();
-			if(!flag) LOGGER.warn("Error when entering the barrier.");
+			if(!flag) LOG.warn("Error when entering the barrier.");
 		} catch (KeeperException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -45,6 +45,6 @@ public class BarrierTest {
 		} catch (InterruptedException | KeeperException e) {
 		}
 		
-		LOGGER.info("Left barrier.");
+		LOG.info("Left barrier.");
 	}
 }

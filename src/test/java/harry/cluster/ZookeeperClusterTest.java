@@ -30,7 +30,7 @@ public class ZookeeperClusterTest {
 	private static ZkClient zkClient = new ZkClient(ZookeeperConfig.CONNECT_STRING);
 	private static final String PATH = "/server";
 	private static List<String> hosts = new ArrayList<String>(3);
-	private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperClusterTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ZookeeperClusterTest.class);
 	
 	private void monitor(String host,int port){
 		if(!zkClient.exists(PATH)){
@@ -116,7 +116,7 @@ public class ZookeeperClusterTest {
 		});
 		
 		hosts = zkClient.getChildren(PATH);
-		LOGGER.info(Arrays.toString(hosts.toArray()));
+		LOG.info(Arrays.toString(hosts.toArray()));
 		if(hosts.size() != 0){
 			String node = hosts.get(new Random().nextInt(hosts.size()));
 			String host = node.split(":")[0];
@@ -145,7 +145,7 @@ public class ZookeeperClusterTest {
 			dst.clear();
 		}
 
-		LOGGER.info(baos.toString());
+		LOG.info(baos.toString());
 		socketChannel.close();
 	}
 }

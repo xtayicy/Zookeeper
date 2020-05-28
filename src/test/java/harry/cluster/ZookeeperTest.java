@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public class ZookeeperTest {
 	private ZkClient zkClient = new ZkClient("localhost:2181");
 	private static final String PATH = "/zoo";
-	private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ZookeeperTest.class);
 	
 	@Test
 	public void testCreate(){
@@ -65,10 +65,10 @@ public class ZookeeperTest {
 	}
 	
 	private void read(String path){
-		LOGGER.info(zkClient.readData(path).toString());
+		LOG.info(zkClient.readData(path).toString());
 	}
 	
 	private void isExist(String path){
-		LOGGER.info(Boolean.toString(zkClient.exists(path)));
+		LOG.info(Boolean.toString(zkClient.exists(path)));
 	}
 }
