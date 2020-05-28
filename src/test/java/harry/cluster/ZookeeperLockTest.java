@@ -1,4 +1,4 @@
-package harry.test;
+package harry.cluster;
 
 import java.io.IOException;
 import java.util.Date;
@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import harry.test.lock.RemoteLockFuture;
-import harry.test.lock.RemoteLockTemplate;
-import harry.test.lock.RemoteLockUnreachableException;
+import harry.lock.RemoteLockFuture;
+import harry.lock.RemoteLockTemplate;
+import harry.lock.RemoteLockUnreachableException;
 
 /**
  * 

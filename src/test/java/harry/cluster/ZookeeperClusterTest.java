@@ -1,4 +1,4 @@
-package harry.test;
+package harry.cluster;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

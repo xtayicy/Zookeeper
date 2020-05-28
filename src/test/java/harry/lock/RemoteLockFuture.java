@@ -1,4 +1,4 @@
-package harry.test.lock;
+package harry.lock;
 
 import java.lang.ref.WeakReference;
 import java.util.TreeMap;

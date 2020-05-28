@@ -1,4 +1,4 @@
-package harry.test.lock;
+package harry.lock;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;

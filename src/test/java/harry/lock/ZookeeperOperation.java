@@ -1,4 +1,4 @@
-package harry.test.lock;
+package harry.lock;
 
 import org.apache.zookeeper.KeeperException;
 

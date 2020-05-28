@@ -1,4 +1,4 @@
-package harry.test.lock;
+package harry.lock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
